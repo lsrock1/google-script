@@ -8,6 +8,33 @@ function doPost(e){
   return handleResponse(e);
 }
 
+function plus(type, original, data){
+  var value;
+
+  if (type == "web"){
+    if (original == 1 && data == -1){
+      value = 0;
+    }
+    else if (original == 0 && data == 1){
+      value = 1;
+    }
+  }
+  else if(type == "android" || type == "ios"){
+    if (original == 3 && data < 0){
+      value = original + data;
+    }
+    else if (original == 2 && (data == -2 || data == 1)){
+      value = original + data;
+    }
+    else if (original == 1 && (data == -1 || data == 2)){
+      value = original + data;
+    }
+    else if (original == 0 && data > 0){
+      value = original + data;
+    }
+  }
+}
+
 function handleResponse(e) {
   
   var lock = LockService.getUserLock();
@@ -16,6 +43,7 @@ function handleResponse(e) {
   try {
     var id = e.parameter["id"],
       language = e.parameter["language"],
+      type = e.parameter["type"],
       value = 0,
       name,
       sheetName = "info",
@@ -66,7 +94,7 @@ function handleResponse(e) {
       }
     }
     
-    if(rowNum==-1){
+    if(rowNum == -1){
       Logger.log("cannot find by your id");
       info="new";
       
@@ -79,18 +107,19 @@ function handleResponse(e) {
         else if(headers[i] == "language"){
           row.push(language);
         }
+        else if(headers[i] == "type"){
+          row.push(type);
+        }
         else if(headers[i] == name){
-          if(value<0) row.push(0);
-          else row.push(value);
-          check=1;
+          row.push(plus(type, 0, value));
+          check = 1;
         }
         else{
           row.push(0);
         }
       }
       if(check==0) {
-        if (value<0) row.push(0);
-        else row.push(value);     
+        row.push(plus(type, 0, value));
       }
       sheet.getRange(rowNum, 1, 1, row.length).setValues([row]);
     }
@@ -104,12 +133,12 @@ function handleResponse(e) {
         else if (headers[i] == "language"){
           row.push(language);
         }
+        else if (headers[i] == "type){
+          row.push(type);
+        }
         else if(headers[i] == name){
           var rowValue = Number(tempRow[i]);
-          if (rowValue + value < 0) row.push(rowValue);
-          else if(rowValue==2&&value==-1) row.push(rowValue);
-          else row.push(rowValue+value);
-          
+          row.push(plus(type, rowValue, value));
           check=1;
         }
         else{
@@ -117,8 +146,7 @@ function handleResponse(e) {
         }
       }
       if(check==0){
-        if (value<0) row.push(0);
-        else row.push(value);
+        row.push(plus(type, 0, value));
       }
       sheet.getRange(rowNum, 1, 1, row.length).setValues([row]);
     }
