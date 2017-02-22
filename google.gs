@@ -26,13 +26,26 @@ function handleResponse(e) {
       value=1;
       name=e.parameter["like"];
     }
-    else if(e.parameter["alarm"]){
+    else if(e.parameter["unlike"]){
+      value=-1;
+      name=e.parameter["unlike"];
+    }
+    else if(e.parameter["alarmOn"]){
       value=2;
-      name = e.parameter["alarm"];
+      name = e.parameter["alarmOn"];
+    }
+    else if(e.parameter["alarmOff"]){
+      value=-2;
+      name = e.parameter["alarmOff"];
     }
     else if(e.parameter["favorite"]){
       value=1;
       name = e.parameter["favorite"];
+      sheetName="rest";
+    }
+    else if(e.parameter["unfavorite"]){
+      value=-1;
+      name = e.parameter["unfavorite"];
       sheetName="rest";
     }
     
@@ -65,7 +78,8 @@ function handleResponse(e) {
           row.push(id);
         }
         else if(headers[i] == name){
-          row.push(value);
+          if(value<0) row.push(0);
+          else row.push(value);
           check=1;
         }
         else{
@@ -73,7 +87,8 @@ function handleResponse(e) {
         }
       }
       if(check==0) {
-        row.push(value);      
+        if (value<0) row.push(0);
+        else row.push(value);     
       }
       sheet.getRange(rowNum, 1, 1, row.length).setValues([row]);
     }
@@ -85,40 +100,21 @@ function handleResponse(e) {
           row.push(id);
         }
         else if(headers[i] == name){
-          var tempValue=Number(tempRow[i]);
-          if(tempValue==0){
-            row.push(tempValue+value);
-          }
-          else if(tempValue==1){
-            if(value==1){
-              row.push(tempValue-value);
-            }
-            else{
-              row.push(tempValue+value);
-            }
-          }
-          else if(tempValue==2){
-            if(value==1){
-              row.push(tempValue+value);
-            }
-            else{
-              row.push(tempValue-value);
-            }
-          }
-          else{
-            row.push(tempValue-value);
-          }
+          var rowValue = Number(tempRow[i]);
+          if (rowValue + value < 0) row.push(rowValue);
+          else if(rowValue==2&&value==-1) row.push(rowValue);
+          else row.push(rowValue+value);
           
           check=1;
         }
         else{
-          row.push(tempValue||0);
+          row.push(tempRow[i]);
         }
       }
       if(check==0){
-        row.push(value);
+        if (value<0) row.push(0);
+        else row.push(value);
       }
-      Logger.log("push data :" + [row]);
       sheet.getRange(rowNum, 1, 1, row.length).setValues([row]);
     }
     
