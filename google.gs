@@ -14,14 +14,15 @@ function handleResponse(e) {
   lock.waitLock(3000);
 
   try {
-    var id = e.parameter["id"];
-    var value=0;
-    var name;
-    var sheetName="info";
-    var rowNum=-1;
-    var check=0;
-    var info;
-    var infoRow;
+    var id = e.parameter["id"],
+      language = e.parameter["language"],
+      value = 0,
+      name,
+      sheetName = "info",
+      rowNum = -1,
+      check=0,
+      info;
+
     if (e.parameter["like"]){
       value=1;
       name=e.parameter["like"];
@@ -54,7 +55,6 @@ function handleResponse(e) {
     var doc = SpreadsheetApp.openById(SCRIPT_PROP.getProperty("key"));
     var sheet = doc.getSheetByName(sheetName);
 
-    // we'll assume header is in row 1 but you can override with header_row in GET/POST data
     var idColumn = sheet.getRange(1, 1, sheet.getLastRow(), 1).getValues();
     var headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
     var row = [];
@@ -66,7 +66,6 @@ function handleResponse(e) {
       }
     }
     
-    //해당 id 없으면
     if(rowNum==-1){
       Logger.log("cannot find by your id");
       info="new";
@@ -76,6 +75,9 @@ function handleResponse(e) {
       for (i in headers){
         if (headers[i] == "id"){
           row.push(id);
+        }
+        else if(headers[i] == "language"){
+          row.push(language);
         }
         else if(headers[i] == name){
           if(value<0) row.push(0);
@@ -98,6 +100,9 @@ function handleResponse(e) {
       for (var i in headers){
         if (headers[i] == "id"){
           row.push(id);
+        }
+        else if (headers[i] == "language"){
+          row.push(language);
         }
         else if(headers[i] == name){
           var rowValue = Number(tempRow[i]);
