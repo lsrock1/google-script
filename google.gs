@@ -133,7 +133,7 @@ function handleResponse(e) {
         else if (headers[i] == "language"){
           row.push(language);
         }
-        else if (headers[i] == "type){
+        else if (headers[i] == "type"){
           row.push(type);
         }
         else if(headers[i] == name){
