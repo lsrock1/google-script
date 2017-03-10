@@ -18,6 +18,7 @@ function plus(type, original, data){
     else if (original == 0 && data == 1){
       value = 1;
     }
+    return value;
   }
   else if(type == "android" || type == "ios"){
     if (original == 3 && data < 0){
@@ -32,7 +33,9 @@ function plus(type, original, data){
     else if (original == 0 && data > 0){
       value = original + data;
     }
+    return value;
   }
+  return original;
 }
 
 function handleResponse(e) {
